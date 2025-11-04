@@ -2,7 +2,7 @@
 
 A production-ready, full-stack Reddit clone built with modern technologies. Features user authentication, post management, real-time sessions, and a responsive UI. Built entirely with TypeScript for end-to-end type safety.
 
-## 🚀 Features
+## Features
 
 ### User Authentication & Authorization
 
@@ -31,7 +31,7 @@ A production-ready, full-stack Reddit clone built with modern technologies. Feat
 - **Server-Side Rendering** for faster initial page loads
 - **Client-Side Caching** with URQL for optimal performance
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend Architecture
 
@@ -66,7 +66,7 @@ A production-ready, full-stack Reddit clone built with modern technologies. Feat
 - **ts-node** - TypeScript execution for Node.js
 - **GraphQL Playground** - Interactive GraphQL API explorer
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -81,7 +81,7 @@ Before you begin, ensure you have the following installed:
 - **pgAdmin** or **DBeaver** - For database management
 - **Redis Commander** - For Redis data visualization
 
-## 🔧 Installation & Setup
+## Installation & Setup
 
 ### 1. Clone the Repository
 
@@ -174,7 +174,7 @@ redis-cli ping
 # Should return: PONG
 ```
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Development Mode
 
@@ -224,7 +224,7 @@ npm run build
 npm start
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Readdit/
@@ -257,47 +257,13 @@ Readdit/
 └── README.md
 ```
 
-## 🔑 Key Features Implementation
+## Key Features Implementation
 
 ### Authentication Flow
 
-#### Registration
-
-1. User submits registration form with username, email, and password
-2. Frontend validates input using Formik
-3. GraphQL mutation sent to server with credentials
-4. Server validates:
-   - Username length (minimum 4 characters)
-   - Username doesn't contain '@' symbol
-   - Email contains '@' symbol
-   - Password length (minimum 6 characters)
-5. Password hashed using Argon2
-6. User stored in PostgreSQL database
-7. Session created and stored in Redis
-8. Session ID sent as HTTP-only cookie
-9. User redirected to home page
-
-#### Login
-
-1. User submits username/email and password
-2. Server checks if input contains '@' to determine lookup field
-3. User retrieved from database
-4. Password verified using Argon2
-5. Session created on successful authentication
-6. User redirected to originally requested page or home
-
-#### Password Reset
-
-1. User requests password reset with email
-2. Server generates unique UUID token
-3. Token stored in Redis with 3-day expiration: `forget-password:{token}`
-4. Email sent with reset link: `http://localhost:3000/change-password/{token}`
-5. User clicks link and enters new password
-6. Server validates token from Redis
-7. Password updated in database
-8. Token deleted from Redis
-9. User automatically logged in
-10. Redirect to home page
+- **Registration** - Users can create accounts with email and username
+- **Login** - Users authenticate with username/email and password
+- **Password Reset** - Users can reset forgotten passwords via email
 
 ### Session Management
 
@@ -321,8 +287,6 @@ Sessions are managed using Redis for optimal performance:
 ```
 
 ### GraphQL API Design
-
-The API follows best practices for GraphQL:
 
 #### Queries
 
@@ -374,36 +338,6 @@ type FieldError {
 }
 ```
 
-### Database Schema
-
-#### Users Table
-
-```sql
-CREATE TABLE "user" (
-  id SERIAL PRIMARY KEY,
-  username VARCHAR UNIQUE NOT NULL,
-  email VARCHAR UNIQUE NOT NULL,
-  password VARCHAR NOT NULL,
-  "createdAt" DATE NOT NULL DEFAULT CURRENT_DATE,
-  "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-#### Posts Table
-
-```sql
-CREATE TABLE "post" (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR NOT NULL,
-  text VARCHAR NOT NULL,
-  points INTEGER NOT NULL DEFAULT 0,
-  "authorId" INTEGER NOT NULL,
-  "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY ("authorId") REFERENCES "user"(id)
-);
-```
-
 ### Protected Routes
 
 The `isAuth` middleware protects routes requiring authentication:
@@ -427,10 +361,6 @@ const CreatePost = () => {
 
 Posts are server-side rendered for SEO benefits:
 
-```typescript
-export default withUrqlClient(createUrqlClient, { ssr: true })(Index);
-```
-
 Benefits:
 
 - Faster initial page load
@@ -441,42 +371,7 @@ Benefits:
 
 URQL cache is updated after mutations for instant UI updates:
 
-```typescript
-// After login, update 'me' query cache
-betterUpdateQuery<LoginMutation, MeQuery>(
-  cache,
-  { query: MeDocument },
-  result,
-  (result, query) => {
-    if (result.login.errors) {
-      return query;
-    } else {
-      return { me: result.login.user };
-    }
-  }
-);
-```
-
-## 📝 Available Scripts
-
-### Server Scripts
-
-```bash
-npm run watch      # Run TypeScript compiler in watch mode
-npm run dev        # Start development server with auto-restart
-npm start          # Start production server (TypeScript execution)
-```
-
-### Client Scripts
-
-```bash
-npm run dev        # Start Next.js development server
-npm run build      # Build optimized production bundle
-npm start          # Start production server
-npm run gen        # Generate TypeScript types from GraphQL schema
-```
-
-## 🔐 Security Features
+## Security Features
 
 ### Password Security
 
